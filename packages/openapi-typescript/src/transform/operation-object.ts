@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { addJSDocComment, NEVER, oapiRef, QUESTION_TOKEN, tsModifiers, tsPropertyIndex } from "../lib/ts.js";
+import { addIndexedAccess, addJSDocComment, NEVER, oapiRef, QUESTION_TOKEN, tsModifiers, tsPropertyIndex } from "../lib/ts.js";
 import { createRef } from "../lib/utils.js";
 import type { OperationObject, RequestBodyObject, TransformNodeOptions } from "../types.js";
 import { transformParametersArray } from "./parameters-array.js";
@@ -61,6 +61,38 @@ export default function transformOperationObject(
       /* type          */ transformResponsesObject(operationObject.responses ?? {}, options),
     ),
   );
+
+  // security
+  if (operationObject.security)
+    type.push(
+      ts.factory.createPropertySignature(
+        /* modifiers     */ tsModifiers({ readonly: options.ctx.immutable }),
+        /* name          */ tsPropertyIndex("security"),
+        /* questionToken */ undefined,
+        /* type          */ 
+        ts.factory.createUnionTypeNode(operationObject.security.flatMap(e => Object.keys(e)).map(k => 
+            addIndexedAccess(
+              ts.factory.createTypeReferenceNode(
+                ts.factory.createIdentifier(
+                  'components',
+                ),
+              ),
+              'securitySchemes',
+              k
+            )
+          )
+        )
+      )
+    )
+  else
+    type.push(
+      ts.factory.createPropertySignature(
+        /* modifiers     */ tsModifiers({ readonly: options.ctx.immutable }),
+        /* name          */ tsPropertyIndex("security"),
+        /* questionToken */ undefined,
+        /* type          */ NEVER,
+      )
+    )
 
   return type;
 }

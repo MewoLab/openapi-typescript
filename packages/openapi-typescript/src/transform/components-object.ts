@@ -10,6 +10,7 @@ import transformPathItemObject from "./path-item-object.js";
 import transformRequestBodyObject from "./request-body-object.js";
 import transformResponseObject from "./response-object.js";
 import transformSchemaObject from "./schema-object.js";
+import transformSecuritySchemes from "./security-schemes-object.js";
 
 /**
  * Determines if a schema object represents an enum type to prevent duplicate exports
@@ -39,7 +40,7 @@ export function isEnumSchema(schema: unknown): boolean {
   );
 }
 
-type ComponentTransforms = keyof Omit<ComponentsObject, "examples" | "securitySchemes" | "links" | "callbacks">;
+type ComponentTransforms = keyof Omit<ComponentsObject, "examples" | "links" | "callbacks">;
 
 const transformers: Record<ComponentTransforms, (node: any, options: TransformNodeOptions) => ts.TypeNode> = {
   schemas: transformSchemaObject,
@@ -48,6 +49,7 @@ const transformers: Record<ComponentTransforms, (node: any, options: TransformNo
   requestBodies: transformRequestBodyObject,
   headers: transformHeaderObject,
   pathItems: transformPathItemObject,
+  securitySchemes: transformSecuritySchemes
 };
 
 /**
@@ -148,7 +150,7 @@ export default function transformComponentsObject(componentsObject: ComponentsOb
 }
 
 export function singularizeComponentKey(
-  key: `x-${string}` | "schemas" | "responses" | "parameters" | "requestBodies" | "headers" | "pathItems",
+  key: `x-${string}` | "schemas" | "responses" | "parameters" | "requestBodies" | "headers" | "pathItems" | "securitySchemes",
 ): string {
   switch (key) {
     // Handle special singular case

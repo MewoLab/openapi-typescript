@@ -134,7 +134,7 @@ function isParameterObject(obj: OapiRefResolved | undefined): obj is ParameterOb
   return Boolean(obj && !isOasRef(obj) && obj.in);
 }
 
-function addIndexedAccess(node: ts.TypeNode, ...segments: readonly string[]) {
+export function addIndexedAccess(node: ts.TypeNode, ...segments: readonly string[]) {
   return segments.reduce<ts.TypeNode>((acc, segment) => {
     return ts.factory.createIndexedAccessTypeNode(
       acc,
