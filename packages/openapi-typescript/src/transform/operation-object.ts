@@ -84,15 +84,6 @@ export default function transformOperationObject(
         )
       )
     )
-  else
-    type.push(
-      ts.factory.createPropertySignature(
-        /* modifiers     */ tsModifiers({ readonly: options.ctx.immutable }),
-        /* name          */ tsPropertyIndex("security"),
-        /* questionToken */ undefined,
-        /* type          */ NEVER,
-      )
-    )
 
   return type;
 }
